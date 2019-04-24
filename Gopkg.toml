@@ -30,8 +30,8 @@
   version = "1.4.0"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/tatsushid/go-fastping"
+  name = "github.com/digineo/go-ping"
+  version = "1.0.0"
 
 [prune]
   go-tests = true
