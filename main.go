@@ -66,14 +66,14 @@ func getStats(opts cmdOpts) error {
 	e := float64(0)
 
 	// preflight
-	_, err := pinger.Ping(ra, time.Duration(opts.Timeout))
+	_, err := pinger.Ping(ra, time.Millisecond * time.Duration(opts.Timeout))
 	if err != nil {
 		log.Printf("error in preflight: %v", err)
 	}
 
 	for i := 0; i < opts.Count; i++ {
 		time.Sleep(time.Millisecond * time.Duration(opts.Interval))
-		rtt, err := pinger.Ping(ra, time.Duration(opts.Timeout))
+		rtt, err := pinger.Ping(ra, time.Millisecond * time.Duration(opts.Timeout))
 		if err != nil {
 			log.Printf("%v", err)
 			e++
