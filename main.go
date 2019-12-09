@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"math"
@@ -30,25 +29,6 @@ type cmdOpts struct {
 
 func round(f float64) int64 {
 	return int64(math.Round(f)) - 1
-}
-
-func pingWithForceTimeout(pinger *ping.Pinger, ra *net.IPAddr, timeout time.Duration) (time.Duration, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*timeout+time.Millisecond*10)
-	defer cancel()
-	ch := make(chan error, 1)
-	var rtt time.Duration
-	var err error
-	go func() {
-		rtt, err = pinger.Ping(ra, time.Millisecond*timeout)
-		ch <- err
-	}()
-	select {
-	case err = <-ch:
-		// nothing
-	case <-ctx.Done():
-		err = fmt.Errorf("ping timeout")
-	}
-	return rtt, err
 }
 
 func getStats(opts cmdOpts) error {
@@ -86,14 +66,14 @@ func getStats(opts cmdOpts) error {
 	e := float64(0)
 
 	// preflight
-	_, err := pingWithForceTimeout(pinger, ra, time.Duration(opts.Timeout))
+	_, err := pinger.Ping(ra, time.Duration(opts.Timeout))
 	if err != nil {
 		log.Printf("error in preflight: %v", err)
 	}
 
 	for i := 0; i < opts.Count; i++ {
 		time.Sleep(time.Millisecond * time.Duration(opts.Interval))
-		rtt, err := pingWithForceTimeout(pinger, ra, time.Duration(opts.Timeout))
+		rtt, err := pinger.Ping(ra, time.Duration(opts.Timeout))
 		if err != nil {
 			log.Printf("%v", err)
 			e++
