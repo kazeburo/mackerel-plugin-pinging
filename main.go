@@ -31,33 +31,43 @@ func round(f float64) int64 {
 	return int64(math.Round(f)) - 1
 }
 
-func getStats(opts cmdOpts) error {
+func resolveHost(Host string) (*net.IPAddr, *ping.Pinger, error) {
 	var ra *net.IPAddr
 	var pinger *ping.Pinger
-	if strings.Index(opts.Host, ":") != -1 {
-		r, err := net.ResolveIPAddr("ip6", opts.Host)
+	if strings.Index(Host, ":") != -1 {
+		r, err := net.ResolveIPAddr("ip6", Host)
 		if err != nil {
-			return err
+			return ra, pinger, err
 		}
 		ra = r
 		p, err := ping.New("", "::")
 		if err != nil {
-			return err
+			return ra, pinger, err
 		}
 		pinger = p
 	} else {
-		r, err := net.ResolveIPAddr("ip4", opts.Host)
+		r, err := net.ResolveIPAddr("ip4", Host)
 		if err != nil {
-			return err
+			return ra, pinger, err
 		}
 		ra = r
 		p, err := ping.New("0.0.0.0", "")
 		if err != nil {
-			return err
+			return ra, pinger, err
 		}
 		pinger = p
 	}
+	return ra, pinger, nil
+}
 
+func getStats(opts cmdOpts) error {
+	ra, pinger, err := resolveHost(opts.Host)
+	if err != nil {
+		errorNow := uint64(time.Now().Unix())
+		fmt.Printf("pinging.%s_rtt_count.success\t%f\t%d\n", opts.KeyPrefix, 0.0, errorNow)
+		fmt.Printf("pinging.%s_rtt_count.error\t%f\t%d\n", opts.KeyPrefix, float64(opts.Count), errorNow)
+		return err
+	}
 	defer pinger.Close()
 
 	var rtts sort.Float64Slice
@@ -66,14 +76,14 @@ func getStats(opts cmdOpts) error {
 	e := float64(0)
 
 	// preflight
-	_, err := pinger.Ping(ra, time.Millisecond * time.Duration(opts.Timeout))
+	_, err = pinger.Ping(ra, time.Millisecond*time.Duration(opts.Timeout))
 	if err != nil {
 		log.Printf("error in preflight: %v", err)
 	}
 
 	for i := 0; i < opts.Count; i++ {
 		time.Sleep(time.Millisecond * time.Duration(opts.Interval))
-		rtt, err := pinger.Ping(ra, time.Millisecond * time.Duration(opts.Timeout))
+		rtt, err := pinger.Ping(ra, time.Millisecond*time.Duration(opts.Timeout))
 		if err != nil {
 			log.Printf("%v", err)
 			e++
