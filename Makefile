@@ -1,15 +1,9 @@
 VERSION=0.0.5
-LDFLAGS=-ldflags "-X main.Version=${VERSION}"
+LDFLAGS=-ldflags "-X main.version=${VERSION}"
 
 all: mackerel-plugin-pinging
 
 .PHONY: mackerel-plugin-pinging
-
-bundle:
-	dep ensure
-
-update:
-	dep ensure -update
 
 mackerel-plugin-pinging: main.go
 	go build $(LDFLAGS) -o mackerel-plugin-pinging
@@ -27,4 +21,3 @@ tag:
 	git tag v${VERSION}
 	git push origin v${VERSION}
 	git push origin master
-	goreleaser --rm-dist
