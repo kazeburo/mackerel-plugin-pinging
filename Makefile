@@ -5,12 +5,6 @@ all: mackerel-plugin-pinging
 
 .PHONY: mackerel-plugin-pinging
 
-bundle:
-	dep ensure
-
-update:
-	dep ensure -update
-
 mackerel-plugin-pinging: main.go
 	go build $(LDFLAGS) -o mackerel-plugin-pinging
 
