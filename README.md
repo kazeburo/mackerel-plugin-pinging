@@ -2,7 +2,6 @@
 
 ICMP Ping RTT custom mackerel plugin
 
-
 ## usage
 
 ```
