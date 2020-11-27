@@ -2,7 +2,7 @@
 
 ICMP Ping RTT custom mackerel plugin
 
-## usage
+## Usage
 
 ```
 Usage:
@@ -20,7 +20,7 @@ Help Options:
   -h, --help        Show this help message
 ```
 
-## sample
+Sample
 
 ```
 pinging.googledns_rtt_count.success     10.000000       1556117540
@@ -30,3 +30,7 @@ pinging.googledns_rtt_ms.min    9.001526        1556117540
 pinging.googledns_rtt_ms.average        10.104696       1556117540
 pinging.googledns_rtt_ms.90_percentile  10.919082       1556117540
 ```
+
+## Install
+
+Please download release page or `mkr plugin install kazeburo/mackerel-plugin-pinging`.
